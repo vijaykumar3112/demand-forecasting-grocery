@@ -1,0 +1,41 @@
+# Core Data Science Libraries
+pandas==1.5.3
+numpy==1.24.3
+
+# Data Visualization
+matplotlib==3.7.1
+seaborn==0.12.2
+plotly==5.14.1
+
+# Machine Learning
+scikit-learn==1.2.2
+xgboost==1.7.5
+lightgbm==3.3.5
+
+# Time Series Forecasting
+statsmodels==0.14.0
+prophet==1.1.4
+
+# API Development
+fastapi==0.95.1
+uvicorn==0.22.0
+pydantic==1.10.7
+
+# Interactive Dashboard
+streamlit==1.22.0
+
+# Experiment Tracking
+mlflow==2.3.1
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+openpyxl==3.1.2
+
+# Jupyter Notebooks
+jupyter==1.0.0
+ipykernel==6.23.1
+notebook==6.5.4
+
+# Testing
+pytest==7.3.1
