@@ -1,0 +1,12 @@
+# Core
+pandas==1.5.3
+numpy==1.24.3
+
+# Machine Learning
+scikit-learn==1.2.2
+lightgbm==3.3.5
+
+# API
+fastapi==0.95.1
+uvicorn[standard]==0.22.0
+pydantic==1.10.7

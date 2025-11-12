@@ -1,0 +1,41 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # FastAPI Backend Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demand-forecasting-api
+    ports:
+      - "8000:8000"
+    # We don't mount volumes here for production builds,
+    # as the data is copied into the image via the Dockerfile.
+    # For development, you would add:
+    # volumes:
+    #   - .:/app
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
+  # Streamlit Frontend Service
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: demand-forecasting-dashboard
+    ports:
+      - "8501:8501"
+    # This ensures the dashboard only starts after the API is healthy
+    depends_on:
+      api:
+        condition: service_healthy
+    # Inside the Docker network, the dashboard can reach the API via its service name "api"
+    environment:
+      - API_URL=http://api:8000
+    restart: unless-stopped

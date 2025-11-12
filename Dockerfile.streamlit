@@ -1,0 +1,46 @@
+# Dockerfile.streamlit
+# Defines the container for our Streamlit dashboard
+# This is the PRODUCTION-READY version.
+
+# Use a slim, stable Python base image
+FROM python:3.10-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Install essential system dependencies that might be needed by visualization libraries
+# 'build-essential' is a meta-package that includes compilers (gcc, g++, make)
+# which are often required to build wheels for some Python packages.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the full requirements file needed by the dashboard
+COPY requirements.txt .
+
+# Upgrade pip to the latest version first for better dependency resolution and stability.
+# Then, install the Python dependencies from requirements.txt.
+# --no-cache-dir: Reduces the final image size by not storing the pip cache.
+# --retries 3: Makes the build more resilient to temporary network failures by retrying failed downloads.
+# --timeout 30: Sets a 30-second timeout for network operations.
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install \
+        --no-cache-dir \
+        --retries 3 \
+        --timeout 30 \
+        -r requirements.txt
+
+# Copy the frontend application code and its associated styles directory
+COPY frontend /app/frontend
+
+# Expose Streamlit's default port so we can map to it from the host
+EXPOSE 8501
+
+# The command to run when the container starts.
+# This starts the Streamlit server.
+# --server.port=8501 is explicit, though it's the default.
+# --server.address=0.0.0.0 is CRUCIAL. It tells Streamlit to listen on all
+# network interfaces inside the container, allowing Docker to forward traffic
+# from the host machine to it. Without this, you wouldn't be able to access
+# the app from your browser at localhost:8501.
+CMD ["streamlit", "run", "frontend/app.py", "--server.port=8501", "--server.address=0.0.0.0"]

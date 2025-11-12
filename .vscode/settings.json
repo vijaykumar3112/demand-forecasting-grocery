@@ -1,0 +1,15 @@
+{
+    "cSpell.words": [
+        "numpy", "scipy", "scikit", "lightgbm", "xgboost", "fastapi", "uvicorn",
+        "pydantic", "dotenv", "streamlit", "plotly", "matplotlib", "seaborn",
+        "statsmodels", "shap", "mlflow", "ipykernel", "pytest", "isort",
+        "stockout", "understocking", "overstocking", "forecasting",
+        "Saikiran",  
+        "venv"       
+    ],
+    "cSpell.ignorePaths": [
+        "requirements.txt"
+    ],
+    "python.defaultInterpreterPath": "C:/Users/Saikiran/Desktop/demand-forecasting-grocery/venv/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true
+}
