@@ -8,6 +8,78 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 
+/* Quick Win: Additional CSS classes to replace inline styles */
+.hero-stats-item {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #ffd700;
+}
+
+.hero-stats-label {
+    color: rgba(255,255,255,0.9);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.gradient-primary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    color: white;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.gradient-primary-card:hover {
+    transform: translateY(-8px);
+}
+
+.gradient-pink-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    color: white;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 12px 40px rgba(240, 147, 251, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.gradient-pink-card:hover {
+    transform: translateY(-8px);
+}
+
+.gradient-blue-card {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    color: white;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 12px 40px rgba(79, 172, 254, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.gradient-blue-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Add fallback fonts to prevent layout shift */
+:root {
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
 /* ============================================================================
    DYNAMIC THEME VARIABLES (Injected by Python)
    ============================================================================ */
@@ -291,6 +363,17 @@ a:hover {
     border-left-color: var(--secondary-color);
 }
 
+.kpi-card:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
 /* KPI Card Elements */
 .kpi-icon {
     font-size: 3rem;
@@ -391,6 +474,31 @@ a:hover {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+/* ============================================================================
+   STICKY HEADERS
+   ============================================================================ */
+
+/* Make sidebar header sticky */
+.stSidebar > div:first-child {
+    position: sticky;
+    top: 0;
+    background: var(--bg-color);
+    z-index: 10;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Sticky page headers */
+.section-header {
+    position: sticky;
+    top: 0;
+    background: var(--bg-color);
+    padding: 1rem 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    z-index: 5;
 }
 
 /* ============================================================================
@@ -555,19 +663,20 @@ a:hover {
     padding: 0.875rem 2rem !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
-    transition: var(--transition) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     box-shadow: var(--box-shadow) !important;
     font-family: var(--font-family) !important;
     text-transform: none !important;
+    cursor: pointer !important;
 }
 
 .stButton > button:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 12px 32px rgba(99, 91, 255, 0.4) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 6px 20px rgba(99, 91, 255, 0.3) !important;
 }
 
 .stButton > button:active {
-    transform: translateY(-1px) !important;
+    transform: translateY(0) scale(0.98) !important;
 }
 
 /* Inputs */
@@ -577,7 +686,137 @@ a:hover {
 .stNumberInput {
     border-radius: var(--border-radius) !important;
 }
+/* Sidebar theme toggle helpers - support class toggle and OS preference */
+/* Sidebar theme toggle helpers - support class toggle and OS preference */
+.sidebar-light [data-testid="stSidebar"],
+body[data-theme="light"] [data-testid="stSidebar"],
+body.light-theme [data-testid="stSidebar"] {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-right: 2px solid var(--border-color) !important;
+    box-shadow: none !important;
+    transition: background-color 250ms var(--transition-timing, ease), color 250ms var(--transition-timing, ease), border-color 250ms var(--transition-timing, ease), box-shadow 250ms var(--transition-timing, ease);
+}
 
+/* Explicit dark sidebar (class or data attribute) */
+.sidebar-dark [data-testid="stSidebar"],
+body[data-theme="dark"] [data-testid="stSidebar"],
+body.dark-theme [data-testid="stSidebar"] {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-right: 2px solid rgba(255,255,255,0.04) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px rgba(0,0,0,0.35);
+    transition: background-color 250ms var(--transition-timing, ease), color 250ms var(--transition-timing, ease), border-color 250ms var(--transition-timing, ease), box-shadow 250ms var(--transition-timing, ease);
+}
+
+/* Follow OS preference when .sidebar-auto is used on a wrapper element */
+.sidebar-auto [data-testid="stSidebar"] {
+    transition: background-color 250ms var(--transition-timing, ease), color 250ms var(--transition-timing, ease), border-color 250ms var(--transition-timing, ease), box-shadow 250ms var(--transition-timing, ease);
+}
+
+/* OS prefers dark */
+@media (prefers-color-scheme: dark) {
+    .sidebar-auto [data-testid="stSidebar"] {
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        border-right: 2px solid rgba(255,255,255,0.04) !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px rgba(0,0,0,0.35);
+    }
+}
+
+/* OS prefers light */
+@media (prefers-color-scheme: light) {
+    .sidebar-auto [data-testid="stSidebar"] {
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        border-right: 2px solid var(--border-color) !important;
+        box-shadow: none;
+    }
+}
+
+/* Small fallback: allow forcing sidebar-only theme via data attribute */
+[data-sidebar-theme="dark"] [data-testid="stSidebar"],
+[data-testid="stSidebar"][data-sidebar-theme="dark"] {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-right: 2px solid rgba(255,255,255,0.04) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+[data-sidebar-theme="light"] [data-testid="stSidebar"],
+[data-testid="stSidebar"][data-sidebar-theme="light"] {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-right: 2px solid var(--border-color) !important;
+    box-shadow: none;
+}
+/* Default/light explicit (when body does NOT have dark-theme) */
+body:not(.dark-theme) [data-testid="stSidebar"],
+.sidebar-light [data-testid="stSidebar"] {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-right: 2px solid var(--border-color) !important;
+    transition: background-color 250ms var(--transition-timing, ease), color 250ms var(--transition-timing, ease), border-color 250ms var(--transition-timing, ease);
+}
+
+/* Dark explicit (when body has dark-theme or .dark-theme is present) */
+body.dark-theme [data-testid="stSidebar"],
+.dark-theme [data-testid="stSidebar"],
+.sidebar-dark [data-testid="stSidebar"] {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-right: 2px solid rgba(255,255,255,0.04) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px rgba(0,0,0,0.35);
+    transition: background-color 250ms var(--transition-timing, ease), color 250ms var(--transition-timing, ease), border-color 250ms var(--transition-timing, ease), box-shadow 250ms var(--transition-timing, ease);
+}
+
+/* Ensure buttons/controls inside sidebar adapt */
+body.dark-theme [data-testid="stSidebar"] .stButton > button,
+.dark-theme [data-testid="stSidebar"] .stButton > button,
+.sidebar-dark [data-testid="stSidebar"] .stButton > button {
+    background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+/* Inputs & selects inside sidebar */
+body.dark-theme [data-testid="stSidebar"] .stSelectbox > div > div,
+.dark-theme [data-testid="stSidebar"] .stSelectbox > div > div,
+.sidebar-dark [data-testid="stSidebar"] .stSelectbox > div > div,
+body.dark-theme [data-testid="stSidebar"] .stTextInput > div > div,
+.dark-theme [data-testid="stSidebar"] .stTextInput > div > div,
+.sidebar-dark [data-testid="stSidebar"] .stTextInput > div > div {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+    box-shadow: none !important;
+}
+
+/* Prefer OS-level dark mode */
+@media (prefers-color-scheme: dark) {
+    [data-testid="stSidebar"] {
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        border-right: 2px solid rgba(255,255,255,0.04) !important;
+    }
+
+    [data-testid="stSidebar"] .stButton > button {
+        background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)) !important;
+        color: var(--text-color) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+}
+
+/* Micro-adjustments for brand area in dark mode */
+body.dark-theme .sidebar-brand,
+.dark-theme .sidebar-brand,
+.sidebar-dark .sidebar-brand {
+    background: linear-gradient(135deg, rgba(99, 91, 255, 0.06) 0%, rgba(0, 212, 255, 0.04) 100%);
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: none;
+    color: var(--primary-color) !important;
+}
 .stSelectbox > div > div,
 .stDateInput > div > div,
 .stTextInput > div > div,
@@ -665,8 +904,159 @@ a:hover {
 }
 
 /* ============================================================================
-   RESPONSIVE DESIGN
+   ACCESSIBILITY
    ============================================================================ */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Remove default outline for mouse users */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Ensure buttons have proper focus */
+button, .stButton, .stSelectbox, input, select {
+    transition: outline-offset 0.2s ease;
+}
+
+/* ============================================================================
+   REUSABLE CLASSES (Replace Inline Styles)
+   ============================================================================ */
+
+/* Replace all inline gradient backgrounds with classes */
+.hero-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    color: white;
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.hero-gradient-primary:hover {
+    transform: translateY(-8px);
+}
+
+.metric-card-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+}
+
+/* Additional gradient classes for different UI elements */
+.gradient-pink-red {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 32px rgba(240, 147, 251, 0.3);
+}
+
+.gradient-light-blue-pink {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    margin: 2rem 0;
+    box-shadow: 0 12px 40px rgba(168, 237, 234, 0.3);
+}
+
+.gradient-blue-cyan {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    color: white;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 12px 40px rgba(79, 172, 254, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.gradient-blue-cyan:hover {
+    transform: translateY(-8px);
+}
+
+.gradient-pink-red-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    color: white;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 12px 40px rgba(240, 147, 251, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.gradient-pink-red-card:hover {
+    transform: translateY(-8px);
+}
+
+.gradient-primary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    color: white;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.gradient-primary-card:hover {
+    transform: translateY(-8px);
+}
+
+.gradient-amber-orange {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+}
+
+.gradient-blue-indigo {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+}
+
+.gradient-primary-small {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    color: white;
+}
+
+/* Apply in Python instead of inline styles */
+/* Instead of: style="background: linear-gradient(...)" */
+/* Use: class="hero-gradient-primary" */
+
 @media (max-width: 1024px) {
     .hero-section {
         padding: 3rem 1.5rem;
@@ -868,7 +1258,7 @@ a:hover {
 
 /* Hero Stats - ensure visibility */
 .dark-theme .hero-stats .stat-item div[style*="color: #ffd700"] {
-    /* Gold color, keep as is for contrast */
+    color: #ffd700 !important;
 }
 
 /* Any other hardcoded elements */
@@ -901,4 +1291,22 @@ a:hover {
         break-inside: avoid;
         page-break-inside: avoid;
     }
+}
+
+/* ============================================================================
+   DASHBOARD-SPECIFIC EMPTY STATE
+   ============================================================================ */
+/* Dashboard empty state styling */
+.dashboard-empty-icon {
+    background: linear-gradient(135deg, #F59E0B, #EF4444) !important; /* Orange to Red */
+}
+
+/* Sample dashboard preview */
+.sample-dashboard-preview {
+    background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1));
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 1rem 0;
+    text-align: center;
 }
