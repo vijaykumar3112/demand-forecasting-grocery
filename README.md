@@ -128,10 +128,4 @@ The model's performance translates directly to operational excellence:
 
 ---
 
-## 👨‍💻 Author
-
-**Vijaykumar**  
-*Data Scientist & Machine Learning Engineer*
-
----
 *© 2025 Enterprise Demand Forecasting Platform. All Rights Reserved.*

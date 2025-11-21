@@ -1,7 +1,6 @@
 """
 Demand Forecasting Dashboard - Professional Edition
 Enterprise-Grade UI with Dark Mode
-Author: Vijaykumar
 Version: 4.1 (Connected to Real API)
 """
 

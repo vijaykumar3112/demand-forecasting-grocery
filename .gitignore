@@ -205,3 +205,80 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ============================================================================
+# PROJECT-SPECIFIC IGNORES
+# ============================================================================
+
+# Debug and test scripts (keep in tests/ directory only)
+debug_*.py
+test_*.py
+check_*.py
+tunnel.py
+
+# Temporary and log files
+*.log
+*.txt
+!requirements*.txt
+!README.txt
+error_log.txt
+feat_out.txt
+my_changes.txt
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+*~
+
+# Model artifacts (keep only production models)
+models/*_temp.pkl
+models/*_backup.pkl
+models/*_old.pkl
+
+# Data files (large datasets should not be in git)
+data/raw/*.csv
+data/processed/*.csv
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Jupyter notebook outputs
+*.ipynb_checkpoints/
+.ipynb_checkpoints
+
+# IDE-specific files
+.vscode/settings.json
+.idea/workspace.xml
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Deployment artifacts
+deployment/temp/
+deployment/*.log
+
+# Environment files (keep .env.example)
+.env
+.env.local
+.env.*.local
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+
+# Streamlit cache
+.streamlit/
+
+# Docker volumes
+docker-volumes/
+
+# Temporary directories
+tmp/
+temp/
+cleanup_backup_*/
