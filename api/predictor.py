@@ -32,6 +32,7 @@ class DemandPredictor:
         self.lgb_model = None
         self.feature_names = None
         self.historical_data = None
+        self.historical_data_indexed = {}  # Cache for O(1) lookups
         # Quantile models (optional)
         self.lgb_q10 = None
         self.lgb_q50 = None
@@ -75,10 +76,18 @@ class DemandPredictor:
         try:
             self.historical_data = pd.read_csv(PROCESSED_DATA_PATH)
             self.historical_data['date'] = pd.to_datetime(self.historical_data['date'])
+            
+            # Create indexed cache for O(1) lookups
+            logger.info("📊 Indexing historical data for fast lookups...")
+            for (item_id, store_id), group in self.historical_data.groupby(['item_id', 'store_id']):
+                self.historical_data_indexed[(item_id, store_id)] = group.sort_values('date')
+                
             logger.info(f"✅ Historical data loaded: {len(self.historical_data):,} records")
+            logger.info(f"✅ Indexed {len(self.historical_data_indexed)} item-store combinations")
         except Exception as e:
             logger.warning(f"⚠️ Could not load historical data: {e}")
             self.historical_data = None
+            self.historical_data_indexed = {}
 
     def engineer_features(self, item_id: int, store_id: int,
                           prediction_date: datetime, on_promotion: bool) -> Dict:
@@ -115,54 +124,50 @@ class DemandPredictor:
             (prediction_date.month == 7 and prediction_date.day == 4)
         )
 
-        # Historical signals if available
-        if self.historical_data is not None:
-            item_store_data = self.historical_data[
-                (self.historical_data['item_id'] == item_id) &
-                (self.historical_data['store_id'] == store_id)
-            ].sort_values('date')
+        # Historical signals - FAST LOOKUP
+        item_store_data = self.historical_data_indexed.get((item_id, store_id))
 
-            if len(item_store_data) > 0:
-                recent_sales = item_store_data['sales'].tail(28).values
+        if item_store_data is not None and len(item_store_data) > 0:
+            recent_sales = item_store_data['sales'].tail(28).values
 
-                # Lags
-                if len(recent_sales) >= 1:
-                    features['sales_lag_1'] = float(recent_sales[-1])
-                if len(recent_sales) >= 7:
-                    features['sales_lag_7'] = float(recent_sales[-7])
-                if len(recent_sales) >= 14:
-                    features['sales_lag_14'] = float(recent_sales[-14])
-                if len(recent_sales) >= 28:
-                    features['sales_lag_28'] = float(recent_sales[-28])
+            # Lags
+            if len(recent_sales) >= 1:
+                features['sales_lag_1'] = float(recent_sales[-1])
+            if len(recent_sales) >= 7:
+                features['sales_lag_7'] = float(recent_sales[-7])
+            if len(recent_sales) >= 14:
+                features['sales_lag_14'] = float(recent_sales[-14])
+            if len(recent_sales) >= 28:
+                features['sales_lag_28'] = float(recent_sales[-28])
 
-                # Rollings
-                if len(recent_sales) >= 7:
-                    features['sales_rolling_mean_7'] = float(np.mean(recent_sales[-7:]))
-                    features['sales_rolling_std_7'] = float(np.std(recent_sales[-7:]))
-                    features['sales_rolling_max_7'] = float(np.max(recent_sales[-7:]))
-                    features['sales_rolling_min_7'] = float(np.min(recent_sales[-7:]))
+            # Rollings
+            if len(recent_sales) >= 7:
+                features['sales_rolling_mean_7'] = float(np.mean(recent_sales[-7:]))
+                features['sales_rolling_std_7'] = float(np.std(recent_sales[-7:]))
+                features['sales_rolling_max_7'] = float(np.max(recent_sales[-7:]))
+                features['sales_rolling_min_7'] = float(np.min(recent_sales[-7:]))
 
-                if len(recent_sales) >= 14:
-                    features['sales_rolling_mean_14'] = float(np.mean(recent_sales[-14:]))
-                    features['sales_rolling_std_14'] = float(np.std(recent_sales[-14:]))
-                    features['sales_rolling_max_14'] = float(np.max(recent_sales[-14:]))
-                    features['sales_rolling_min_14'] = float(np.min(recent_sales[-14:]))
+            if len(recent_sales) >= 14:
+                features['sales_rolling_mean_14'] = float(np.mean(recent_sales[-14:]))
+                features['sales_rolling_std_14'] = float(np.std(recent_sales[-14:]))
+                features['sales_rolling_max_14'] = float(np.max(recent_sales[-14:]))
+                features['sales_rolling_min_14'] = float(np.min(recent_sales[-14:]))
 
-                if len(recent_sales) >= 28:
-                    features['sales_rolling_mean_28'] = float(np.mean(recent_sales[-28:]))
-                    features['sales_rolling_std_28'] = float(np.std(recent_sales[-28:]))
-                    features['sales_rolling_max_28'] = float(np.max(recent_sales[-28:]))
-                    features['sales_rolling_min_28'] = float(np.min(recent_sales[-28:]))
+            if len(recent_sales) >= 28:
+                features['sales_rolling_mean_28'] = float(np.mean(recent_sales[-28:]))
+                features['sales_rolling_std_28'] = float(np.std(recent_sales[-28:]))
+                features['sales_rolling_max_28'] = float(np.max(recent_sales[-28:]))
+                features['sales_rolling_min_28'] = float(np.min(recent_sales[-28:]))
 
-                # Encodings
-                if 'category_encoded' in item_store_data.columns:
-                    features['category_encoded'] = int(item_store_data['category_encoded'].iloc[-1])
-                if 'store_type_encoded' in item_store_data.columns:
-                    features['store_type_encoded'] = int(item_store_data['store_type_encoded'].iloc[-1])
-                if 'store_size_encoded' in item_store_data.columns:
-                    features['store_size_encoded'] = int(item_store_data['store_size_encoded'].iloc[-1])
-                if 'perishability_days' in item_store_data.columns:
-                    features['perishability_days'] = int(item_store_data['perishability_days'].iloc[-1])
+            # Encodings
+            if 'category_encoded' in item_store_data.columns:
+                features['category_encoded'] = int(item_store_data['category_encoded'].iloc[-1])
+            if 'store_type_encoded' in item_store_data.columns:
+                features['store_type_encoded'] = int(item_store_data['store_type_encoded'].iloc[-1])
+            if 'store_size_encoded' in item_store_data.columns:
+                features['store_size_encoded'] = int(item_store_data['store_size_encoded'].iloc[-1])
+            if 'perishability_days' in item_store_data.columns:
+                features['perishability_days'] = int(item_store_data['perishability_days'].iloc[-1])
 
         # Fill missing features with defaults
         for feat in self.feature_names:
@@ -325,4 +330,3 @@ else:
 
     def get_predictor_advanced():
         return get_predictor()
-  

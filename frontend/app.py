@@ -150,6 +150,25 @@ st.markdown(f"""
         color: {COLORS['text_primary']} !important;
     }}
     
+    /* Fix Input Fields (Date, Selectbox) */
+    div[data-baseweb="input"] > div, div[data-baseweb="base-input"], input {{
+        color: {COLORS['text_primary']} !important;
+        background-color: {COLORS['surface']} !important;
+        -webkit-text-fill-color: {COLORS['text_primary']} !important;
+    }}
+    
+    /* Fix Tooltip Icon (?) */
+    div[data-testid="stTooltipIcon"] > svg {{
+        fill: {COLORS['text_secondary']} !important;
+        color: {COLORS['text_secondary']} !important;
+    }}
+    
+    /* Fix Selectbox Dropdown Text */
+    ul[data-baseweb="menu"] li {{
+        color: {COLORS['text_primary']} !important;
+        background-color: {COLORS['surface']} !important;
+    }}
+    
     .block-container {{ padding: 2rem 3rem 3rem 3rem; max-width: 1400px; }}
 
     .page-header {{
@@ -314,6 +333,7 @@ st.markdown(f"""
 # API FUNCTIONS
 # =============================================================================
 
+@st.cache_data(ttl=300, show_spinner=False)  # Cache for 5 minutes
 def get_metadata():
     """Fetch available items and stores from API"""
     try:
@@ -363,6 +383,54 @@ def get_multi_step_forecast(item_id, store_id, start_date, horizon=30):
             return None
     except:
         return None
+
+@st.cache_data(ttl=60, show_spinner=False)  # Cache for 1 minute
+def get_health_status():
+    """Get API health status"""
+    try:
+        response = requests.get(f"{API_URL}/health", timeout=2)
+        if response.status_code == 200:
+            return response.json(), "Online", "Healthy"
+        return {}, "Offline", "Down"
+    except:
+        return {}, "Offline", "Down"
+
+@st.cache_data(ttl=60, show_spinner=False)  # Cache for 1 minute
+def get_valid_ranges():
+    """Get valid item/store ranges"""
+    try:
+        response = requests.get(f"{API_URL}/items/valid-ranges", timeout=2)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get('valid_items', {}).get('count', 0), data.get('valid_stores', {}).get('count', 0)
+        return 0, 0
+    except:
+        return 0, 0
+
+@st.cache_data(ttl=60, show_spinner=False)  # Cache for 1 minute
+def get_model_performance():
+    """Get model performance metrics"""
+    try:
+        response = requests.get(f"{API_URL}/model/performance", timeout=2)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get('metrics', {}).get('MAE', 0), data.get('metrics', {}).get('R2', 0)
+        return 0, 0
+    except:
+        return 0, 0
+
+@st.cache_data(ttl=600, show_spinner=False)  # Cache for 10 minutes
+def load_historical_data_sample(nrows=5000):
+    """Load a sample of historical data for charts"""
+    try:
+        import os
+        data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'processed', 'features_engineered.csv')
+        df = pd.read_csv(data_path, nrows=nrows)
+        df['date'] = pd.to_datetime(df['date'])
+        return df
+    except Exception as e:
+        return None
+
 
 # =============================================================================
 # SIDEBAR
@@ -435,7 +503,7 @@ if st.session_state.page == "Forecaster":
         submitted = st.form_submit_button("Generate Forecast", type="primary", use_container_width=True)
         
         if submitted:
-            with st.spinner("Running prediction models..."):
+            with st.spinner("Generating forecast..."):
                 # 1. Get Single Prediction
                 result = get_prediction(item_id, store_id, date, on_promo)
                 
@@ -518,7 +586,12 @@ if st.session_state.page == "Forecaster":
                         font=dict(family="Inter", color=COLORS['text_primary']),
                         xaxis=dict(showgrid=False),
                         yaxis=dict(showgrid=True, gridcolor=COLORS['border']),
-                        hovermode="x unified"
+                        hovermode="x unified",
+                        hoverlabel=dict(
+                            bgcolor=COLORS['surface'],
+                            font_color=COLORS['text_primary'],
+                            bordercolor=COLORS['border']
+                        )
                     )
                     st.plotly_chart(fig, use_container_width=True)
         else:
@@ -532,49 +605,14 @@ elif st.session_state.page == "Overview":
         </div>
     """, unsafe_allow_html=True)
     
-    # System Status - REAL DATA
-    try:
-        response = requests.get(f"{API_URL}/health", timeout=2)
-        if response.status_code == 200:
-            health_data = response.json()
-            api_status_text = "Online"
-            api_delta = "Healthy"
-        else:
-            api_status_text = "Offline"
-            api_delta = "Down"
-            health_data = {}
-    except:
-        api_status_text = "Offline"
-        api_delta = "Down"
-        health_data = {}
+    # System Status - Use cached function
+    health_data, api_status_text, api_delta = get_health_status()
     
-    # Get real item/store ranges from API
-    try:
-        ranges_response = requests.get(f"{API_URL}/items/valid-ranges", timeout=2)
-        if ranges_response.status_code == 200:
-            ranges_data = ranges_response.json()
-            total_items = ranges_data.get('valid_items', {}).get('count', 0)
-            total_stores = ranges_data.get('valid_stores', {}).get('count', 0)
-        else:
-            total_items = 0
-            total_stores = 0
-    except:
-        total_items = 0
-        total_stores = 0
+    # Get real item/store ranges - Use cached function
+    total_items, total_stores = get_valid_ranges()
     
-    # Get real model performance from API
-    try:
-        perf_response = requests.get(f"{API_URL}/model/performance", timeout=2)
-        if perf_response.status_code == 200:
-            perf_data = perf_response.json()
-            model_mae = perf_data.get('metrics', {}).get('MAE', 0)
-            model_r2 = perf_data.get('metrics', {}).get('R2', 0)
-        else:
-            model_mae = 0
-            model_r2 = 0
-    except:
-        model_mae = 0
-        model_r2 = 0
+    # Get real model performance - Use cached function
+    model_mae, model_r2 = get_model_performance()
     
     # System Health
     st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>System Health</h3>", unsafe_allow_html=True)
@@ -616,15 +654,10 @@ elif st.session_state.page == "Overview":
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Load and analyze historical data for REAL charts
-    try:
-        import os
-        data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'processed', 'features_engineered.csv')
-        
-        # Only load a sample for performance
-        df_sample = pd.read_csv(data_path, nrows=10000)
-        df_sample['date'] = pd.to_datetime(df_sample['date'])
-        
+    # Load and analyze historical data for REAL charts - Use cached function
+    df_sample = load_historical_data_sample(nrows=5000)  # Reduced from 10000 to 5000
+    
+    if df_sample is not None:
         st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>Historical Data Analysis</h3>", unsafe_allow_html=True)
         
         chart_col1, chart_col2 = st.columns(2)
@@ -646,13 +679,18 @@ elif st.session_state.page == "Overview":
                 font=dict(family="Inter", color=COLORS['text_primary']),
                 xaxis=dict(showgrid=False, title="Day"),
                 yaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Average Sales"),
-                height=300
+                height=300,
+                hoverlabel=dict(
+                    bgcolor=COLORS['surface'],
+                    font_color=COLORS['text_primary'],
+                    bordercolor=COLORS['border']
+                )
             )
             st.plotly_chart(fig1, use_container_width=True)
         
         with chart_col2:
             # Real - Promotion Impact
-            promo_impact = df_sample.groupby('onpromotion')['sales'].mean()
+            promo_impact = df_sample.groupby('on_promotion')['sales'].mean()
             
             fig2 = go.Figure(data=[
                 go.Bar(
@@ -668,22 +706,24 @@ elif st.session_state.page == "Overview":
                 font=dict(family="Inter", color=COLORS['text_primary']),
                 xaxis=dict(showgrid=False),
                 yaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Average Sales"),
-                height=300
+                height=300,
+                hoverlabel=dict(
+                    bgcolor=COLORS['surface'],
+                    font_color=COLORS['text_primary'],
+                    bordercolor=COLORS['border']
+                )
             )
             st.plotly_chart(fig2, use_container_width=True)
-        
-    except Exception as e:
-        st.warning(f"Historical data analysis unavailable: {str(e)}")
+    else:
+        st.warning("Historical data analysis unavailable")
     
     # Business Intelligence - Top/Bottom Performers
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>Top & Bottom Performers</h3>", unsafe_allow_html=True)
     
-    try:
-        import os
-        data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'processed', 'features_engineered.csv')
-        df_analysis = pd.read_csv(data_path, nrows=50000)
-        
+    df_analysis = load_historical_data_sample(nrows=10000)  # Reduced from 50000
+    
+    if df_analysis is not None:
         perf_col1, perf_col2 = st.columns(2)
         
         with perf_col1:
@@ -750,11 +790,15 @@ elif st.session_state.page == "Overview":
             xaxis=dict(showgrid=False, title="Store"),
             yaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Total Sales (units)"),
             height=350,
-            showlegend=False
+            showlegend=False,
+            hoverlabel=dict(
+                bgcolor=COLORS['surface'],
+                font_color=COLORS['text_primary'],
+                bordercolor=COLORS['border']
+            )
         )
         st.plotly_chart(fig_stores, use_container_width=True)
-        
-    except Exception as e:
+    else:
         st.info("Detailed analytics loading...")
 
 
@@ -821,7 +865,12 @@ elif st.session_state.page == "Performance":
                         font=dict(family="Inter", color=COLORS['text_primary']),
                         yaxis=dict(autorange="reversed", title=""),
                         xaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Importance Score"),
-                        height=400
+                        height=400,
+                        hoverlabel=dict(
+                            bgcolor=COLORS['surface'],
+                            font_color=COLORS['text_primary'],
+                            bordercolor=COLORS['border']
+                        )
                     )
                     st.plotly_chart(fig_feat, use_container_width=True)
                 
@@ -872,7 +921,12 @@ elif st.session_state.page == "Performance":
                         xaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Sales (units)"),
                         yaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Frequency"),
                         height=350,
-                        showlegend=False
+                        showlegend=False,
+                        hoverlabel=dict(
+                            bgcolor=COLORS['surface'],
+                            font_color=COLORS['text_primary'],
+                            bordercolor=COLORS['border']
+                        )
                     )
                     st.plotly_chart(fig_dist, use_container_width=True)
                 
@@ -899,7 +953,12 @@ elif st.session_state.page == "Performance":
                         xaxis=dict(showgrid=False, title="Date"),
                         yaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Average Sales"),
                         height=350,
-                        showlegend=False
+                        showlegend=False,
+                        hoverlabel=dict(
+                            bgcolor=COLORS['surface'],
+                            font_color=COLORS['text_primary'],
+                            bordercolor=COLORS['border']
+                        )
                     )
                     st.plotly_chart(fig_trend, use_container_width=True)
                 

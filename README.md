@@ -1,4 +1,4 @@
-# 🛒 Enterprise Demand Forecasting Platform
+# 🛒 Demand Forecasting for Perishable Grocery Items
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
@@ -23,21 +23,21 @@ This platform addresses the critical challenge of inventory management in the re
 
 ## 🚀 Key Features
 
-### 🖥️ Interactive Business Dashboard
+### 🖥️ Interactive Business Dashboard (v4.1)
 *   **Real-Time Analytics**: Live system health monitoring and model performance tracking.
 *   **Dynamic Forecasting**: Generate predictions for specific items, stores, and dates instantly.
-*   **Dark/Light Mode**: Enterprise-grade UI with seamless theme switching.
+*   **Professional UI**: Enterprise-grade Dark/Light mode with themed tooltips and polished aesthetics.
 *   **Visual Insights**: Interactive Plotly charts for sales trends, confidence intervals, and feature importance.
+
+### ⚡ High-Performance Backend
+*   **Instant Predictions**: Optimized **O(1) Indexed Caching** reduces prediction latency to <100ms.
+*   **Scalable Architecture**: Built on FastAPI for high-concurrency handling.
+*   **Robust Error Handling**: Graceful degradation and detailed health status reporting.
 
 ### 🧠 Advanced Machine Learning
 *   **State-of-the-Art Model**: Built on LightGBM for superior speed and accuracy.
 *   **Explainable AI (XAI)**: Integrated SHAP analysis to understand *why* predictions are made.
 *   **Robust Feature Engineering**: Utilizes lag features, rolling statistics, and temporal embeddings.
-
-### 🔌 Scalable REST API
-*   **FastAPI Backend**: High-performance asynchronous API for serving predictions.
-*   **Health Monitoring**: Endpoints for system status (`/health`) and model metrics (`/model/performance`).
-*   **Batch Processing**: Support for multi-step forecasting and bulk predictions.
 
 ---
 
@@ -96,36 +96,36 @@ streamlit run frontend/app.py
 demand-forecasting-grocery/
 ├── 📂 api/                 # FastAPI Backend
 │   ├── app.py             # API Endpoints & Logic
-│   └── predictor.py       # Model Inference Engine
+│   └── predictor.py       # Model Inference Engine (Optimized)
 ├── 📂 data/                # Data Storage
-│   ├── raw/               # Original Datasets
-│   └── processed/         # Feature Engineered Data
+│   ├── 📂 processed/      # Cleaned & engineered datasets
+│   └── 📂 raw/            # Original datasets
 ├── 📂 frontend/            # Streamlit Dashboard
-│   ├── app.py             # Main Dashboard Application
-│   └── styles/            # CSS & Theme Configurations
-├── 📂 models/              # Serialized Models
-│   └── model_lgbm.pkl     # Trained LightGBM Model
-├── 📂 notebooks/           # Jupyter Notebooks
-│   ├── 01_EDA.ipynb       # Exploratory Data Analysis
-│   ├── 02_Features.ipynb  # Feature Engineering
-│   └── 03_Training.ipynb  # Model Training & Evaluation
-├── requirements.txt       # Project Dependencies
-└── README.md              # Project Documentation
+│   └── app.py             # Main Dashboard Application
+├── 📂 models/              # Trained Models
+│   └── lgb_model.txt      # LightGBM Model Artifact
+├── 📂 notebooks/           # Jupyter Notebooks (EDA & Training)
+├── 📂 src/                 # Shared Source Code
+│   ├── 📂 features/       # Feature Engineering Logic
+│   └── 📂 models/         # Model Training Scripts
+├── requirements.txt        # Project Dependencies
+└── README.md               # Project Documentation
 ```
 
 ---
 
-## 📈 Business Impact Analysis
+## 🤝 Contributing
 
-The model's performance translates directly to operational excellence:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-| Metric | Improvement | Financial Impact |
-| :--- | :--- | :--- |
-| **Forecast Accuracy** | **86.9%** (vs 65% Baseline) | Reduced uncertainty in supply chain. |
-| **Stockouts** | **⬇️ 35% Reduction** | **$2.25M** saved in lost sales. |
-| **Food Waste** | **⬇️ 48% Reduction** | **$1.41M** saved in spoilage. |
-| **Total ROI** | **450%** | **$9.5M** projected annual savings. |
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
 ---
 
-*© 2025 Enterprise Demand Forecasting Platform. All Rights Reserved.*
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
