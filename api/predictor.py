@@ -199,10 +199,16 @@ class DemandPredictor:
         Return (p10, p50, p90) using quantile LightGBM models.
         feature_array: shape (1, n_features)
         """
-        p10 = float(self.lgb_q10.predict(feature_array)[0])
-        p50 = float(self.lgb_q50.predict(feature_array)[0])
-        p90 = float(self.lgb_q90.predict(feature_array)[0])
-        return max(0.0, p10), max(0.0, p50), max(0.0, p90)
+        if self.lgb_q10 is not None and self.lgb_q50 is not None and self.lgb_q90 is not None:
+            p10 = float(self.lgb_q10.predict(feature_array)[0])
+            p50 = float(self.lgb_q50.predict(feature_array)[0])
+            p90 = float(self.lgb_q90.predict(feature_array)[0])
+            return max(0.0, p10), max(0.0, p50), max(0.0, p90)
+        else:
+            # Fallback if quantile models don't exist
+            base_pred = float(self.lgb_model.predict(feature_array)[0])
+            base_pred = max(0.0, base_pred)
+            return base_pred * 0.8, base_pred, base_pred * 1.2
 
     def predict(self, item_id: int, store_id: int,
                 prediction_date: str, on_promotion: bool) -> Tuple[float, float, float]:

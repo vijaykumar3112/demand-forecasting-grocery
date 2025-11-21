@@ -28,6 +28,7 @@ statsmodels==0.14.0
 
 # Explainability (optional, large; used in notebooks, not required in API/Docker)
 shap==0.43.0
+prophet>=1.1.5
 
 # Experiment Tracking (optional)
 mlflow==2.3.1
