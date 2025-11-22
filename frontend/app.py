@@ -420,8 +420,8 @@ def get_model_performance():
         return 0, 0
 
 @st.cache_data(ttl=600, show_spinner=False)  # Cache for 10 minutes
-def load_historical_data_sample(nrows=5000):
-    """Load a sample of historical data for charts"""
+def load_historical_data_sample(nrows=2000):
+    """Load a sample of historical data for charts (optimized for speed)"""
     try:
         import os
         data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'processed', 'features_engineered.csv')
@@ -500,15 +500,19 @@ if st.session_state.page == "Forecaster":
             date = st.date_input("Target Date", datetime.now() + timedelta(days=1))
             
         on_promo = st.toggle("Promotional Offer Active", help="Enable if a promotion is active")
-        submitted = st.form_submit_button("Generate Forecast", type="primary", use_container_width=True)
+        def clear_forecast_results():
+            st.session_state.forecast_result = None
+            st.session_state.forecast_data = None
+
+        submitted = st.form_submit_button("Generate Forecast", type="primary", use_container_width=True, on_click=clear_forecast_results)
         
         if submitted:
             with st.spinner("Generating forecast..."):
-                # 1. Get Single Prediction
+                # 1. Get Single Prediction (FAST)
                 result = get_prediction(item_id, store_id, date, on_promo)
                 
-                # 2. Get Multi-step Forecast for Graph
-                forecast_data = get_multi_step_forecast(item_id, store_id, date, horizon=30)
+                # 2. Get Multi-step Forecast for Graph (OPTIONAL - reduced to 7 days for speed)
+                forecast_data = get_multi_step_forecast(item_id, store_id, date, horizon=7)
                 
                 # Store in session state to persist across theme changes
                 st.session_state.forecast_result = result
@@ -535,7 +539,7 @@ if st.session_state.page == "Forecaster":
                     
                     # 3. Display Graph
                     st.markdown("<br>", unsafe_allow_html=True)
-                    st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>30-Day Demand Trend</h3>", unsafe_allow_html=True)
+                    st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>7-Day Demand Trend</h3>", unsafe_allow_html=True)
                     
                     if forecast_data and 'forecasts' in forecast_data:
                         df_forecast = pd.DataFrame(forecast_data['forecasts'])
@@ -572,9 +576,9 @@ if st.session_state.page == "Forecaster":
                         
                     else:
                         # Fallback graph
-                        dates = [date + timedelta(days=i) for i in range(30)]
+                        dates = [date + timedelta(days=i) for i in range(7)]
                         base_val = result['predicted_demand']
-                        values = [base_val * (1 + 0.1 * np.sin(i/5) + np.random.normal(0, 0.05)) for i in range(30)]
+                        values = [base_val * (1 + 0.1 * np.sin(i/5) + np.random.normal(0, 0.05)) for i in range(7)]
                         
                         df_mock = pd.DataFrame({'date': dates, 'demand': values})
                         fig = px.line(df_mock, x='date', y='demand', title=f'Projected Trend (Estimated)')
@@ -655,7 +659,7 @@ elif st.session_state.page == "Overview":
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Load and analyze historical data for REAL charts - Use cached function
-    df_sample = load_historical_data_sample(nrows=5000)  # Reduced from 10000 to 5000
+    df_sample = load_historical_data_sample(nrows=2000)  # Optimized for speed
     
     if df_sample is not None:
         st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>Historical Data Analysis</h3>", unsafe_allow_html=True)
@@ -717,89 +721,6 @@ elif st.session_state.page == "Overview":
     else:
         st.warning("Historical data analysis unavailable")
     
-    # Business Intelligence - Top/Bottom Performers
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>Top & Bottom Performers</h3>", unsafe_allow_html=True)
-    
-    df_analysis = load_historical_data_sample(nrows=10000)  # Reduced from 50000
-    
-    if df_analysis is not None:
-        perf_col1, perf_col2 = st.columns(2)
-        
-        with perf_col1:
-            # Top 5 selling items
-            top_items = df_analysis.groupby('item_id')['sales'].sum().nlargest(5)
-            
-            st.markdown(f"""
-                <div style="background: {COLORS['surface']}; padding: 1rem; border-radius: 12px; border: 1px solid {COLORS['border']}; margin-bottom: 1rem;">
-                    <h4 style="color: {COLORS['success']}; margin: 0 0 0.75rem 0; font-size: 1rem;">Top 5 Items by Total Sales</h4>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            for idx, (item_id, sales) in enumerate(top_items.items(), 1):
-                sales_formatted = f"{sales:,.0f}"
-                st.markdown(f"""
-                    <div style="background: {COLORS['surface']}; padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid {COLORS['success']}; margin-bottom: 0.5rem;">
-                        <strong style="color: {COLORS['text_primary']};">#{idx} Item {item_id}</strong>
-                        <span style="float: right; color: {COLORS['success']}; font-weight: 600;">{sales_formatted} units</span>
-                    </div>
-                """, unsafe_allow_html=True)
-        
-        with perf_col2:
-            # Bottom 5 selling items (need attention)
-            bottom_items = df_analysis.groupby('item_id')['sales'].sum().nsmallest(5)
-            
-            st.markdown(f"""
-                <div style="background: {COLORS['surface']}; padding: 1rem; border-radius: 12px; border: 1px solid {COLORS['border']}; margin-bottom: 1rem;">
-                    <h4 style="color: {COLORS['warning']}; margin: 0 0 0.75rem 0; font-size: 1rem;">Bottom 5 Items (Need Attention)</h4>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            for idx, (item_id, sales) in enumerate(bottom_items.items(), 1):
-                sales_formatted = f"{sales:,.0f}"
-                st.markdown(f"""
-                    <div style="background: {COLORS['surface']}; padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid {COLORS['warning']}; margin-bottom: 0.5rem;">
-                        <strong style="color: {COLORS['text_primary']};">Item {item_id}</strong>
-                        <span style="float: right; color: {COLORS['warning']}; font-weight: 600;">{sales_formatted} units</span>
-                    </div>
-                """, unsafe_allow_html=True)
-        
-        # Store Performance Comparison
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='color:{COLORS['text_primary']}; font-size:1.25rem; margin-bottom:1rem;'>Store Performance Overview</h3>", unsafe_allow_html=True)
-        
-        store_performance = df_analysis.groupby('store_id').agg({
-            'sales': ['sum', 'mean', 'count']
-        }).round(2)
-        store_performance.columns = ['Total Sales', 'Avg Sales', 'Transactions']
-        store_performance = store_performance.sort_values('Total Sales', ascending=False)
-        
-        fig_stores = go.Figure()
-        fig_stores.add_trace(go.Bar(
-            x=[f"Store {sid}" for sid in store_performance.index],
-            y=store_performance['Total Sales'],
-            marker_color=COLORS['primary'],
-            name='Total Sales'
-        ))
-        
-        fig_stores.update_layout(
-            title="Total Sales by Store Location",
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(family="Inter", color=COLORS['text_primary']),
-            xaxis=dict(showgrid=False, title="Store"),
-            yaxis=dict(showgrid=True, gridcolor=COLORS['border'], title="Total Sales (units)"),
-            height=350,
-            showlegend=False,
-            hoverlabel=dict(
-                bgcolor=COLORS['surface'],
-                font_color=COLORS['text_primary'],
-                bordercolor=COLORS['border']
-            )
-        )
-        st.plotly_chart(fig_stores, use_container_width=True)
-    else:
-        st.info("Detailed analytics loading...")
 
 
 

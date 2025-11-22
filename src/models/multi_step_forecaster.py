@@ -38,10 +38,14 @@ class MultiStepForecaster:
         current_date = start_date
         
         # Get historical data for this item-store
-        item_data = self.historical_data[
+        # OPTIMIZATION: Only keep last 60 days (sufficient for max lag of 28)
+        # This prevents pd.concat from being slow on large dataframes
+        full_item_data = self.historical_data[
             (self.historical_data['item_id'] == item_id) &
             (self.historical_data['store_id'] == store_id)
-        ].copy()
+        ].sort_values('date')
+        
+        item_data = full_item_data.tail(60).copy()
         
         for day in range(horizon):
             # Engineer features for current day
@@ -73,6 +77,10 @@ class MultiStepForecaster:
                 item_data,
                 pd.DataFrame([new_row])
             ], ignore_index=True)
+            
+            # Keep item_data small for next iteration
+            if len(item_data) > 60:
+                item_data = item_data.tail(60)
             
             # Move to next day
             current_date += timedelta(days=1)
