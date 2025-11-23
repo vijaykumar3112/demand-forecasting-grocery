@@ -20,7 +20,7 @@ import hashlib
 # =============================================================================
 
 # API_URL = "http://api:8000"  # For Docker deployment
-API_URL = "http://localhost:8000"  # For local development
+API_URL = os.getenv("API_URL", "http://localhost:8000")  # Read from environment variable, fallback to localhost
 
 # =============================================================================
 # PAGE CONFIGURATION
