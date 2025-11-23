@@ -1,23 +1,27 @@
-# Core
-pandas==1.5.3
-numpy==1.24.3
-scipy==1.10.1
+# Build tools (required for Python 3.13)
+setuptools>=65.0.0
+wheel>=0.38.0
 
-# Machine Learning
-scikit-learn==1.2.2
-lightgbm==3.3.5
-xgboost==1.7.5
+# Core (updated for Python 3.13 compatibility)
+pandas>=2.0.0
+numpy>=1.26.0
+scipy>=1.11.0
 
-# API (FastAPI)
-fastapi==0.95.1
-uvicorn[standard]==0.22.0
-pydantic==1.10.7
-python-dotenv==1.0.0
+# Machine Learning (updated versions)
+scikit-learn>=1.3.0
+lightgbm>=4.0.0
+xgboost>=2.0.0
 
-# Frontend (Streamlit Dashboard)
-streamlit==1.30.0
-plotly==5.14.1
-requests==2.31.0
+# API (FastAPI) - updated versions
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+
+# Frontend (Streamlit Dashboard) - updated versions
+streamlit>=1.28.0
+plotly>=5.18.0
+requests>=2.31.0
 
 # Visualization (for analysis/notebooks)
 matplotlib==3.7.1
