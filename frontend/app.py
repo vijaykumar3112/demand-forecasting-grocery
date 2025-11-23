@@ -138,15 +138,17 @@ st.markdown(f"""
     }}
     
     
+    
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     .stDeployButton {{display: none;}}
-    header {{visibility: hidden;}}
     
-    /* Hide the app menu (share/link icon) */
-    button[kind="header"] {{display: none;}}
-    [data-testid="stAppViewBlockContainer"] button[kind="header"] {{display: none;}}
-    .stApp > header {{display: none;}}
+    /* Hide the app menu (share/link icon) but keep sidebar toggle */
+    button[kind="header"]:not([data-testid="collapsedControl"]) {{display: none;}}
+    [data-testid="stAppViewBlockContainer"] button[kind="header"]:not([data-testid="collapsedControl"]) {{display: none;}}
+    
+    /* Keep sidebar toggle button visible */
+    button[data-testid="collapsedControl"] {{display: block !important; visibility: visible !important;}}
     
     
     .stApp {{ background-color: {COLORS['background']} !important; }}
