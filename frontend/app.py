@@ -143,9 +143,13 @@ st.markdown(f"""
     footer {{visibility: hidden;}}
     .stDeployButton {{display: none;}}
     
-    /* Hide only the share button, not the entire header */
+    /* Hide only the share button */
     button[title="Share"] {{display: none;}}
     button[aria-label="Share"] {{display: none;}}
+    
+    /* Force header to match background color (removes white strip) */
+    header {{background-color: {COLORS['background']} !important;}}
+    .stApp > header {{background-color: {COLORS['background']} !important;}}
     
     
     .stApp {{ background-color: {COLORS['background']} !important; }}
