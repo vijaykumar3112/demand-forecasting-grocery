@@ -136,10 +136,17 @@ st.markdown(f"""
         background-color: {COLORS['background']} !important;
     }}
     
+    
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     .stDeployButton {{display: none;}}
     header {{visibility: hidden;}}
+    
+    /* Hide the app menu (share/link icon) */
+    button[kind="header"] {{display: none;}}
+    [data-testid="stAppViewBlockContainer"] button[kind="header"] {{display: none;}}
+    .stApp > header {{display: none;}}
+    
     
     .stApp {{ background-color: {COLORS['background']} !important; }}
     .main .block-container {{ background-color: {COLORS['background']} !important; }}
@@ -444,6 +451,14 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
+    st.markdown(f'<div style="margin: 1.5rem 0 0.75rem 0.5rem; color: {COLORS["text_secondary"]}; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Navigation</div>', unsafe_allow_html=True)
+    
+    pages = {"Overview": "Dashboard Overview", "Forecaster": "Demand Forecaster", "Performance": "Performance Analytics"}
+    for page_id, page_label in pages.items():
+        if st.button(page_label, key=f"nav_{page_id}", type="primary" if st.session_state.page == page_id else "secondary", use_container_width=True):
+            st.session_state.page = page_id
+            st.rerun()
+
     st.markdown(f'<div style="margin: 1.5rem 0 0.75rem 0.5rem; color: {COLORS["text_secondary"]}; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Theme</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1], gap="small")
@@ -454,14 +469,6 @@ with st.sidebar:
     with col2:
         if st.button("Dark", key="theme_dark", type="primary" if st.session_state.dark_mode else "secondary", use_container_width=True):
             st.session_state.dark_mode = True
-            st.rerun()
-
-    st.markdown(f'<div style="margin: 1.5rem 0 0.75rem 0.5rem; color: {COLORS["text_secondary"]}; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Navigation</div>', unsafe_allow_html=True)
-    
-    pages = {"Overview": "Dashboard Overview", "Forecaster": "Demand Forecaster", "Performance": "Performance Analytics"}
-    for page_id, page_label in pages.items():
-        if st.button(page_label, key=f"nav_{page_id}", type="primary" if st.session_state.page == page_id else "secondary", use_container_width=True):
-            st.session_state.page = page_id
             st.rerun()
 
 # =============================================================================
@@ -598,7 +605,8 @@ if st.session_state.page == "Forecaster":
                         )
                     )
                     st.plotly_chart(fig, use_container_width=True)
-        else:
+        elif submitted and not result:
+            # Only show error if form was submitted but failed
             st.error("Failed to generate forecast. Please check API connection.")
 
 elif st.session_state.page == "Overview":

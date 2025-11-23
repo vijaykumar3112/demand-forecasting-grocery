@@ -1,0 +1,25 @@
+services:
+  # FastAPI Backend Service
+  - type: web
+    name: demand-forecasting-api
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    
+  # Streamlit Dashboard Service  
+  - type: web
+    name: demand-forecasting-dashboard
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    envVars:
+      - key: API_URL
+        fromService:
+          name: demand-forecasting-api
+          type: web
+          property: hostport
