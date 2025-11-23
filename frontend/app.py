@@ -149,7 +149,14 @@ st.markdown(f"""
     
     
     .stApp {{ background-color: {COLORS['background']} !important; }}
-    .main .block-container {{ background-color: {COLORS['background']} !important; }}
+    
+    /* Remove top whitespace */
+    .main .block-container {{ 
+        background-color: {COLORS['background']} !important; 
+        padding-top: 1rem !important; 
+        margin-top: -3rem !important;
+    }}
+    
     section[data-testid="stSidebar"] {{ background-color: {COLORS['surface']} !important; }}
     section[data-testid="stSidebar"] > div {{ background-color: {COLORS['surface']} !important; }}
     
