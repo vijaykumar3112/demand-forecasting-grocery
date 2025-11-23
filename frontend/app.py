@@ -143,12 +143,9 @@ st.markdown(f"""
     footer {{visibility: hidden;}}
     .stDeployButton {{display: none;}}
     
-    /* Hide the app menu (share/link icon) but keep sidebar toggle */
-    button[kind="header"]:not([data-testid="collapsedControl"]) {{display: none;}}
-    [data-testid="stAppViewBlockContainer"] button[kind="header"]:not([data-testid="collapsedControl"]) {{display: none;}}
-    
-    /* Keep sidebar toggle button visible */
-    button[data-testid="collapsedControl"] {{display: block !important; visibility: visible !important;}}
+    /* Hide only the share button, not the entire header */
+    button[title="Share"] {{display: none;}}
+    button[aria-label="Share"] {{display: none;}}
     
     
     .stApp {{ background-color: {COLORS['background']} !important; }}
