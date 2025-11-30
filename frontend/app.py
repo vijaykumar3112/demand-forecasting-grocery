@@ -327,27 +327,18 @@ st.markdown(f"""
         border-radius: 16px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }}
-    /* Metric value (main number) - gradient with fallback */
+    /* Metric value (main number) - SOLID COLOR for visibility */
     div[data-testid="metric-container"] div[data-testid="stMetricValue"] {{
-        color: {COLORS['text_primary']} !important;
-        background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['secondary']} 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: {COLORS['primary']} !important;
+        font-weight: 700 !important;
+        -webkit-text-fill-color: {COLORS['primary']} !important;
     }}
-    /* Fallback for browsers that don't support background-clip */
-    @supports not (-webkit-background-clip: text) {{
-        div[data-testid="metric-container"] div[data-testid="stMetricValue"] {{
-            color: {COLORS['primary']} !important;
-            -webkit-text-fill-color: {COLORS['primary']} !important;
-        }}
-    }}
-    /* Metric label (title) */
+    /* Metric label (title) - WHITE/BLACK depending on theme */
     div[data-testid="metric-container"] label {{
         color: {COLORS['text_primary']} !important;
         font-weight: 600 !important;
     }}
-    /* Metric delta text (third parameter - e.g., "High Confidence", "Lower is better") */
+    /* Metric delta text (third parameter) - VISIBLE */
     div[data-testid="metric-container"] div[data-testid="stMetricDelta"] {{
         color: {COLORS['text_secondary']} !important;
     }}
@@ -357,13 +348,15 @@ st.markdown(f"""
     div[data-testid="metric-container"] div[data-testid="stMetricDelta"] svg {{
         fill: {COLORS['text_secondary']} !important;
     }}
-    /* All text inside metrics - force visibility */
+    /* Force ALL text to be visible */
+    div[data-testid="metric-container"], 
     div[data-testid="metric-container"] * {{
         color: {COLORS['text_primary']} !important;
     }}
-    /* Specific fix for metric value text nodes */
-    div[data-testid="metric-container"] div[data-testid="stMetricValue"] * {{
-        color: {COLORS['text_primary']} !important;
+    /* Override for delta text specifically */
+    div[data-testid="metric-container"] div[data-testid="stMetricDelta"],
+    div[data-testid="metric-container"] div[data-testid="stMetricDelta"] * {{
+        color: {COLORS['text_secondary']} !important;
     }}
     
     /* Plotly charts - Force text visibility */
