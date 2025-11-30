@@ -319,7 +319,7 @@ st.markdown(f"""
         color: {COLORS['text_primary']} !important;
     }}
     
-    /* Metrics */
+    /* Metrics - Complete visibility fix */
     div[data-testid="metric-container"] {{
         background-color: {COLORS['surface']} !important;
         border: 1px solid {COLORS['border']} !important;
@@ -334,7 +334,19 @@ st.markdown(f"""
         -webkit-text-fill-color: transparent;
     }}
     div[data-testid="metric-container"] label {{
+        color: {COLORS['text_primary']} !important;
+        font-weight: 600 !important;
+    }}
+    /* Metric delta text (third parameter) */
+    div[data-testid="metric-container"] div[data-testid="stMetricDelta"] {{
         color: {COLORS['text_secondary']} !important;
+    }}
+    div[data-testid="metric-container"] div[data-testid="stMetricDelta"] svg {{
+        fill: {COLORS['text_secondary']} !important;
+    }}
+    /* All text inside metrics */
+    div[data-testid="metric-container"] * {{
+        color: {COLORS['text_primary']} !important;
     }}
     
     /* Plotly charts - Force text visibility */
