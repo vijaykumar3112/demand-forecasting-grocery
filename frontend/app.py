@@ -122,11 +122,13 @@ COLORS = DARK_COLORS if st.session_state.dark_mode else LIGHT_COLORS
 # PROFESSIONAL STYLING
 # =============================================================================
 
-colors_hash = hashlib.md5(str(COLORS).encode()).hexdigest()[:8]
+# Force CSS reload with timestamp cache buster
+import time
+cache_buster = str(int(time.time()))
 
 st.markdown(f"""
     <style>
-    /* Cache buster: {colors_hash} */
+    /* CACHE BUSTER: {cache_buster} - Forces reload */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     
     * {{ font-family: 'Inter', sans-serif; }}
@@ -332,13 +334,13 @@ st.markdown(f"""
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }}
     
-    /* METRIC VALUE - MAIN NUMBER (e.g., "Online", "45", "12.45") */
+    /* METRIC VALUE - MAIN NUMBER (e.g., "Online", "45", "12.45") - BRIGHT WHITE! */
     div[data-testid="metric-container"] [data-testid="stMetricValue"],
     div[data-testid="metric-container"] [data-testid="stMetricValue"] > div,
     div[data-testid="metric-container"] [data-testid="stMetricValue"] * {{
-        color: {COLORS['primary']} !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
-        -webkit-text-fill-color: {COLORS['primary']} !important;
+        -webkit-text-fill-color: #FFFFFF !important;
         opacity: 1 !important;
         background: none !important;
         background-clip: unset !important;
