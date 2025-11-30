@@ -502,6 +502,7 @@ with st.sidebar:
         <div style="padding: 1rem 0.5rem 2rem 0.5rem; text-align: center;">
             <h1 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: {COLORS['text_primary']};">DemandForecast</h1>
             <p style="font-size: 0.6875rem; color: {COLORS['text_secondary']}; margin: 0.5rem 0 0 0; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;">Enterprise Platform</p>
+            <p style="font-size: 0.6rem; color: {COLORS['text_secondary']}; margin-top: 0.5rem; opacity: 0.7;">v4.2 (Updated: {datetime.now().strftime('%H:%M:%S')})</p>
         </div>
     """, unsafe_allow_html=True)
 
