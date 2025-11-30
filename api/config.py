@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Model paths
 MODELS_DIR = BASE_DIR / "models"
-LIGHTGBM_MODEL_PATH = MODELS_DIR / "lightgbm_model.txt"
+LIGHTGBM_MODEL_PATH = MODELS_DIR / "model_lgb.txt"
 XGBOOST_MODEL_PATH = MODELS_DIR / "xgboost_model.pkl"
 FEATURE_NAMES_PATH = MODELS_DIR / "feature_names.pkl"
 
