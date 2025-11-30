@@ -319,7 +319,11 @@ st.markdown(f"""
         color: {COLORS['text_primary']} !important;
     }}
     
-    /* Metrics - Complete visibility fix */
+    /* ========================================
+       METRICS - AGGRESSIVE VISIBILITY FIX
+       ======================================== */
+    
+    /* Metric container */
     div[data-testid="metric-container"] {{
         background-color: {COLORS['surface']} !important;
         border: 1px solid {COLORS['border']} !important;
@@ -327,36 +331,51 @@ st.markdown(f"""
         border-radius: 16px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }}
-    /* Metric value (main number) - SOLID COLOR for visibility */
-    div[data-testid="metric-container"] div[data-testid="stMetricValue"] {{
+    
+    /* METRIC VALUE - MAIN NUMBER (e.g., "Online", "45", "12.45") */
+    div[data-testid="metric-container"] [data-testid="stMetricValue"],
+    div[data-testid="metric-container"] [data-testid="stMetricValue"] > div,
+    div[data-testid="metric-container"] [data-testid="stMetricValue"] * {{
         color: {COLORS['primary']} !important;
         font-weight: 700 !important;
         -webkit-text-fill-color: {COLORS['primary']} !important;
+        opacity: 1 !important;
+        background: none !important;
+        background-clip: unset !important;
+        -webkit-background-clip: unset !important;
     }}
-    /* Metric label (title) - WHITE/BLACK depending on theme */
-    div[data-testid="metric-container"] label {{
+    
+    /* METRIC LABEL - TITLE (e.g., "API Status", "Uptime") */
+    div[data-testid="metric-container"] [data-testid="stMetricLabel"],
+    div[data-testid="metric-container"] label,
+    div[data-testid="metric-container"] label * {{
         color: {COLORS['text_primary']} !important;
         font-weight: 600 !important;
+        -webkit-text-fill-color: {COLORS['text_primary']} !important;
+        opacity: 1 !important;
     }}
-    /* Metric delta text (third parameter) - VISIBLE */
-    div[data-testid="metric-container"] div[data-testid="stMetricDelta"] {{
+    
+    /* METRIC DELTA - DESCRIPTION (e.g., "Healthy", "Active") */
+    div[data-testid="metric-container"] [data-testid="stMetricDelta"],
+    div[data-testid="metric-container"] [data-testid="stMetricDelta"] *,
+    div[data-testid="metric-container"] [data-testid="stMetricDelta"] > div {{
         color: {COLORS['text_secondary']} !important;
+        -webkit-text-fill-color: {COLORS['text_secondary']} !important;
+        opacity: 1 !important;
     }}
-    div[data-testid="metric-container"] div[data-testid="stMetricDelta"] * {{
-        color: {COLORS['text_secondary']} !important;
-    }}
-    div[data-testid="metric-container"] div[data-testid="stMetricDelta"] svg {{
+    
+    div[data-testid="metric-container"] [data-testid="stMetricDelta"] svg {{
         fill: {COLORS['text_secondary']} !important;
     }}
-    /* Force ALL text to be visible */
-    div[data-testid="metric-container"], 
-    div[data-testid="metric-container"] * {{
+    
+    /* FORCE ALL TEXT IN METRICS TO BE VISIBLE */
+    div[data-testid="metric-container"],
+    div[data-testid="metric-container"] div,
+    div[data-testid="metric-container"] span,
+    div[data-testid="metric-container"] p {{
         color: {COLORS['text_primary']} !important;
-    }}
-    /* Override for delta text specifically */
-    div[data-testid="metric-container"] div[data-testid="stMetricDelta"],
-    div[data-testid="metric-container"] div[data-testid="stMetricDelta"] * {{
-        color: {COLORS['text_secondary']} !important;
+        -webkit-text-fill-color: {COLORS['text_primary']} !important;
+        opacity: 1 !important;
     }}
     
     /* Plotly charts - Force text visibility */
