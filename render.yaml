@@ -6,8 +6,16 @@ services:
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn api.app:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn api.app:app --host 0.0.0.0 --port $PORT --workers 1
     healthCheckPath: /health
+    autoDeploy: true
+    # Health check configuration
+    healthCheck:
+      path: /health
+      interval: 30
+      timeout: 10
+      unhealthyThreshold: 3
+      healthyThreshold: 2
     
   # Streamlit Dashboard Service  
   - type: web
@@ -17,6 +25,7 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    autoDeploy: true
     envVars:
       - key: API_URL
         fromService:

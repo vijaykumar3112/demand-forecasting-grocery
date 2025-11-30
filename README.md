@@ -107,54 +107,6 @@ Want to deploy this application to the cloud? We've got you covered!
 
 *   **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Complete deployment instructions for all platforms
 *   **[TESTING_SUMMARY.md](TESTING_SUMMARY.md)** - Testing results and deployment readiness checklist
-*   **Deployment Files Included**:
-    *   `render.yaml` - Render.com blueprint
-    *   `railway.json` - Railway.app configuration
-    *   `Procfile` - Heroku configuration
-    *   `docker-compose.yml` - Docker deployment
-
-### 🚀 One-Click Deploy (Recommended)
-
-**Deploy to Render.com** (Easiest):
-1. Fork this repository
-2. Go to [Render.com](https://render.com)
-3. Click "New" → "Blueprint"
-4. Connect your forked repository
-5. Click "Apply" - Done! ✨
-
-Your app will be live in ~10 minutes with both API and Dashboard deployed automatically.
-
----
-
-## 📂 Project Structure
-
-```
-demand-forecasting-grocery/
-├── 📂 api/                 # FastAPI Backend
-│   ├── app.py             # API Endpoints & Logic
-│   └── predictor.py       # Model Inference Engine (Optimized)
-├── 📂 data/                # Data Storage
-│   ├── 📂 processed/      # Cleaned & engineered datasets
-│   └── 📂 raw/            # Original datasets
-├── 📂 frontend/            # Streamlit Dashboard
-│   └── app.py             # Main Dashboard Application
-├── 📂 models/              # Trained Models
-│   └── lgb_model.txt      # LightGBM Model Artifact
-├── 📂 notebooks/           # Jupyter Notebooks (EDA & Training)
-├── 📂 src/                 # Shared Source Code
-│   ├── 📂 features/       # Feature Engineering Logic
-│   └── 📂 models/         # Model Training Scripts
-├── DEPLOYMENT_GUIDE.md     # Deployment Instructions
-├── TESTING_SUMMARY.md      # Testing Results
-├── requirements.txt        # Project Dependencies
-└── README.md               # Project Documentation
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)

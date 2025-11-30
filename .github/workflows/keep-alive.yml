@@ -1,0 +1,26 @@
+name: Keep API Alive
+
+on:
+  schedule:
+    # Run every 10 minutes to prevent API from sleeping
+    - cron: '*/10 * * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  ping-api:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping API Health Endpoint
+        run: |
+          echo "Pinging API health endpoint..."
+          curl -f https://demand-forecasting-api.onrender.com/health || echo "⚠️ API health check failed"
+          
+      - name: Ping API Root
+        run: |
+          echo "Pinging API root endpoint..."
+          curl -f https://demand-forecasting-api.onrender.com/ || echo "⚠️ API root check failed"
+          
+      - name: Log Success
+        run: |
+          echo "✅ Keep-alive ping completed at $(date)"
